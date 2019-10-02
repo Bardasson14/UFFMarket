@@ -1,28 +1,21 @@
 import 'package:flutter/material.dart';
+import 'auth.dart';
+import 'login_page.dart';
 import 'products.dart';
 
 void main() => runApp(MainApp());
 
-class MainApp extends StatefulWidget {
+Color uffBlue = const Color(0xff005AAE);
+
+class MainApp extends StatelessWidget{
   @override
-  State<StatefulWidget> createState() {
-    return MainAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: LoginPage(),  
+    );
   }
 }
 
-//var pageList = [];
-
-class MainAppState extends State<MainApp>{
-  //int _selectedPage = 0;
-
-  @override
-  Widget build(BuildContext context) {
-   
-    return MaterialApp(
-      home: HomePage(),
-      );
-    }
-}
 
 class HomePage extends StatelessWidget{
   

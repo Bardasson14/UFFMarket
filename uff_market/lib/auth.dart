@@ -24,19 +24,16 @@ class AuthService{
     });
   }
 
-  Future<FirebaseUser> googleSignIn() async{
-    loading.add(true);
+  Future<FirebaseUser> handleSignIn() async {
     GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-    FirebaseUser user = await _auth.signInWithGoogle(
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
       accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken
+      idToken: googleAuth.idToken,
     );
-
-    updateUserData(user);
+    final AuthResult authResult = await _auth.signInWithCredential(credential);
+    FirebaseUser user = authResult.user;
     print("signed in " + user.displayName);
-
-    loading.add(false);
     return user;
   }
 
