@@ -7,30 +7,32 @@ Color uffBlue = const Color(0xff005AAE);
 class LoginPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-    _LoginPageState createState() => _LoginPageState();
+    return _LoginPageState();
   }
-  
 }
 
 class _LoginPageState extends State<LoginPage>{
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: uffBlue,
-      body: Container(
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              logInButton()
-            ],
-          )
+      body: Center(
+          child: loginButton(context), 
         )
-      )
-    );
-  }
+      );
+ }
 
-  Widget logInButton(){
-    return OutlineButton(
+  Widget loginButton (BuildContext context){
+    return MaterialButton(
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+      splashColor: Colors.black,
+      child: Text(
+        "Entre aqui com sua conta Google",
+        style: TextStyle(
+          color: uffBlue,
+        ),),
       onPressed: (){
         authService.handleSignIn().whenComplete((){
           Navigator.of(context).push(
@@ -42,16 +44,8 @@ class _LoginPageState extends State<LoginPage>{
           );
         });
       },  
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-      child: Text(
-        "Entre aqui com sua conta Google",
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-
+                     
     );
   }
-  
 }
 

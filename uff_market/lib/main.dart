@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'auth.dart';
 import 'login_page.dart';
 import 'products.dart';
 
@@ -7,11 +6,17 @@ void main() => runApp(MainApp());
 
 Color uffBlue = const Color(0xff005AAE);
 
-class MainApp extends StatelessWidget{
+class MainApp extends StatefulWidget{
   @override
+  State<StatefulWidget> createState() {
+    return _MainAppState();
+  }  
+}
+
+class _MainAppState extends State<MainApp>{
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: LoginPage(),  
+      home: LoginPage()
     );
   }
 }
@@ -26,6 +31,7 @@ class HomePage extends StatelessWidget{
     
     return Scaffold(
       drawer: Drawer(
+          
         ),
         appBar: AppBar(
           backgroundColor: const Color(0xff005AAE),
@@ -33,7 +39,7 @@ class HomePage extends StatelessWidget{
             "UFF Market",
             style: TextStyle(
               decoration: TextDecoration.none,
-              fontFamily: 'Quicksand',
+              //fontFamily: 'Quicksand',
               fontSize: 25,
             ),
           ),
@@ -56,8 +62,7 @@ class HomePage extends StatelessWidget{
           child: ButtonGrid()
             )
           ],
-        )
-            
+        )  
     );
   }
 }
