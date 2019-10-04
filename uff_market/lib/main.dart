@@ -1,38 +1,46 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+//import 'package:uff_market/auth.dart';
+import 'login_page.dart';
 import 'products.dart';
 
 void main() => runApp(MainApp());
 
-class MainApp extends StatefulWidget {
+Color uffBlue = const Color(0xff005AAE);
+
+class MainApp extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-    return MainAppState();
+    return _MainAppState();
+  }  
+}
+
+class _MainAppState extends State<MainApp>{
+  
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: LoginPage()
+    );
   }
 }
 
-//var pageList = [];
-
-class MainAppState extends State<MainApp>{
-  //int _selectedPage = 0;
-
-  @override
-  Widget build(BuildContext context) {
-   
-    return MaterialApp(
-      home: HomePage(),
-      );
-    }
-}
 
 class HomePage extends StatelessWidget{
   
   @override
   Widget build (BuildContext context){
+    
     var width = MediaQuery.of(context).size.width * 0.4;
     var height = MediaQuery.of(context).size.height * 0.15;
     
     return Scaffold(
       drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.all(20),
+          children: <Widget>[
+            
+            ],
+          ),
         ),
         appBar: AppBar(
           backgroundColor: const Color(0xff005AAE),
@@ -40,31 +48,57 @@ class HomePage extends StatelessWidget{
             "UFF Market",
             style: TextStyle(
               decoration: TextDecoration.none,
-              fontFamily: 'Quicksand',
+              //fontFamily: 'Quicksand',
               fontSize: 25,
             ),
           ),
           centerTitle: true,
         ),
       body: Column(
-      children: <Widget>[ 
+      children: <Widget>[
         new Padding(
-          padding: EdgeInsets.all(height/2),
-          child: TextField(
-            decoration: InputDecoration(
-              hintText: "Pesquise aqui um item específico...",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-            ),
-          ),
+          padding: EdgeInsets.symmetric(vertical: height/3),
+          child: FutureBuilder(
+          future: FirebaseAuth.instance.currentUser(),
+          builder: (context, AsyncSnapshot<FirebaseUser> snapshot) {
+              if (snapshot.hasData) {
+                return Text("Bem vindo, " + snapshot.data.displayName.split(" ")[0] + "!",
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w600
+                  ),);
+              }
+              else {
+                return Text('Loading...',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w600
+                  ),);
+              }
+          } 
         ),
+        ),
+        
+       
         new Expanded(
           child: ButtonGrid()
-            )
-          ],
-        )
-            
+        ),
+         FloatingActionButton(
+           backgroundColor: uffBlue,
+           child: Icon(Icons.add,
+            color: Colors.white,),
+            onPressed: (){
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context){
+                    return SellProduct();
+                  }
+                )
+              );
+            },
+         )
+        ],
+      )  
     );
   }
 }

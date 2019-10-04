@@ -1,4 +1,4 @@
-package com.example.uff_market
+package com.labmoveis.uff_market
 
 import android.os.Bundle
 
