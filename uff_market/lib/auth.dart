@@ -11,7 +11,7 @@ class AuthService{
   Observable <FirebaseUser> user;
   Observable <Map <String, dynamic>> profile;
   PublishSubject loading = PublishSubject();
-
+  
   AuthService(){
     user = Observable(_auth.onAuthStateChanged);
     profile = user.switchMap((FirebaseUser u){
@@ -51,6 +51,7 @@ class AuthService{
   void  signOut(){
     _auth.signOut();
   }
+
 }
 
 final AuthService authService = AuthService();

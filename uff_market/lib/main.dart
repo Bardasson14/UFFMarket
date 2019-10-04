@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:uff_market/auth.dart';
 import 'login_page.dart';
 import 'products.dart';
 
@@ -14,6 +16,7 @@ class MainApp extends StatefulWidget{
 }
 
 class _MainAppState extends State<MainApp>{
+  
   Widget build(BuildContext context) {
     return MaterialApp(
       home: LoginPage()
@@ -26,12 +29,18 @@ class HomePage extends StatelessWidget{
   
   @override
   Widget build (BuildContext context){
+    
     var width = MediaQuery.of(context).size.width * 0.4;
     var height = MediaQuery.of(context).size.height * 0.15;
     
     return Scaffold(
       drawer: Drawer(
-          
+        child: ListView(
+          padding: EdgeInsets.all(20),
+          children: <Widget>[
+            
+            ],
+          ),
         ),
         appBar: AppBar(
           backgroundColor: const Color(0xff005AAE),
@@ -46,7 +55,27 @@ class HomePage extends StatelessWidget{
           centerTitle: true,
         ),
       body: Column(
-      children: <Widget>[ 
+      children: <Widget>[
+        new Padding(
+          padding: EdgeInsets.only(top: height/5),
+          child: FutureBuilder(
+          future: FirebaseAuth.instance.currentUser(),
+          builder: (context, AsyncSnapshot<FirebaseUser> snapshot) {
+              if (snapshot.hasData) {
+                
+                return Text("Bem vindo, " + snapshot.data.displayName.split(" ")[0] + "!",
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w600
+                  ),);
+              }
+              else {
+                return Text('Loading...');
+              }
+          } 
+        ),
+        ),
+        
         new Padding(
           padding: EdgeInsets.all(height/2),
           child: TextField(
@@ -60,8 +89,16 @@ class HomePage extends StatelessWidget{
         ),
         new Expanded(
           child: ButtonGrid()
-            )
-          ],
+        ),
+         FloatingActionButton(
+           backgroundColor: uffBlue,
+           child: Icon(Icons.add,
+            color: Colors.white,),
+            onPressed: (){
+
+            },
+         )
+        ],
         )  
     );
   }
