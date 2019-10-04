@@ -131,7 +131,7 @@ class SellProductState extends State<SellProduct>{
                         side: BorderSide(width:1, style: BorderStyle.solid),
                         borderRadius: BorderRadius.all(Radius.circular(15))
                       )
-                    ),
+                    ), 
                     child: 
                       DropdownButton<String>(
                         value: dropdownValue,
