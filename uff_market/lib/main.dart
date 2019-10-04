@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:uff_market/auth.dart';
+//import 'package:uff_market/auth.dart';
 import 'login_page.dart';
 import 'products.dart';
 
@@ -57,12 +57,11 @@ class HomePage extends StatelessWidget{
       body: Column(
       children: <Widget>[
         new Padding(
-          padding: EdgeInsets.only(top: height/5),
+          padding: EdgeInsets.symmetric(vertical: height/3),
           child: FutureBuilder(
           future: FirebaseAuth.instance.currentUser(),
           builder: (context, AsyncSnapshot<FirebaseUser> snapshot) {
               if (snapshot.hasData) {
-                
                 return Text("Bem vindo, " + snapshot.data.displayName.split(" ")[0] + "!",
                   style: TextStyle(
                     fontSize: 30,
@@ -70,23 +69,17 @@ class HomePage extends StatelessWidget{
                   ),);
               }
               else {
-                return Text('Loading...');
+                return Text('Loading...',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w600
+                  ),);
               }
           } 
         ),
         ),
         
-        new Padding(
-          padding: EdgeInsets.all(height/2),
-          child: TextField(
-            decoration: InputDecoration(
-              hintText: "Pesquise aqui um item específico...",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-            ),
-          ),
-        ),
+       
         new Expanded(
           child: ButtonGrid()
         ),
@@ -95,11 +88,17 @@ class HomePage extends StatelessWidget{
            child: Icon(Icons.add,
             color: Colors.white,),
             onPressed: (){
-
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context){
+                    return SellProduct();
+                  }
+                )
+              );
             },
          )
         ],
-        )  
+      )  
     );
   }
 }
