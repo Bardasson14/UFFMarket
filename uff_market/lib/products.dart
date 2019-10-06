@@ -144,7 +144,7 @@ class SellProductState extends State<SellProduct>{
                           setState(() {
                             dropdownValue = newValue;
                           }); 
-                        },
+                        }, 
                         items: <String>['Gragoatá', 'Praia Vermelha', 'IACS', 'Valonguinho',
                           'Direito'].map<DropdownMenuItem<String>>((String value){
                             return DropdownMenuItem<String>(
