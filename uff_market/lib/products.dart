@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 Color uffBlue = const Color(0xff005AAE);
+String dropdownValue;
 
 class Product {
   String productID;
@@ -77,7 +78,7 @@ class SellProductState extends State<SellProduct>{
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width * 0.4;
     var height = MediaQuery.of(context).size.height * 0.15;
-    String dropdownValue;
+    
     
     return Scaffold(
       appBar: AppBar(
@@ -145,7 +146,7 @@ class SellProductState extends State<SellProduct>{
                           });
                         },
                         items: <String>['Gragoatá', 'Praia Vermelha', 'IACS', 'Valonguinho',
-                          'Gragoatá', 'Direito'].map<DropdownMenuItem<String>>((String value){
+                          'Direito'].map<DropdownMenuItem<String>>((String value){
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
