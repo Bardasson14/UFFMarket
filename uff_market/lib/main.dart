@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-//import 'package:uff_market/auth.dart';
+import 'package:uff_market/auth.dart';
 import 'login_page.dart';
 import 'products.dart';
 
 void main() => runApp(MainApp());
+
+
 
 Color uffBlue = const Color(0xff005AAE);
 
@@ -38,7 +40,24 @@ class HomePage extends StatelessWidget{
         child: ListView(
           padding: EdgeInsets.all(20),
           children: <Widget>[
-            
+              ListTile(contentPadding: EdgeInsets.only(top:height/4),),
+              ListTile(
+                leading: Text("Sair",
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),),
+                trailing: IconButton(icon: Icon(Icons.do_not_disturb_off, color: Colors.red,),
+                onPressed: (){
+                  authService.signOut();
+                  Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context){
+                      return LoginPage();
+                    }
+                )
+              );
+                },),
+              )
             ],
           ),
         ),
@@ -60,23 +79,23 @@ class HomePage extends StatelessWidget{
           padding: EdgeInsets.symmetric(vertical: height/3),
           child: FutureBuilder(
           future: FirebaseAuth.instance.currentUser(),
-          builder: (context, AsyncSnapshot<FirebaseUser> snapshot) {
-              if (snapshot.hasData) {
-                return Text("Bem vindo, " + snapshot.data.displayName.split(" ")[0] + "!",
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w600
-                  ),);
-              }
-              else {
-                return Text('Loading...',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w600
-                  ),);
-              }
-          } 
-        ),
+            builder: (context, AsyncSnapshot<FirebaseUser> snapshot) {
+                if (snapshot.hasData) {
+                  return Text("Bem vindo, " + snapshot.data.displayName.split(" ")[0] + "!",
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w600
+                    ),);
+                }
+                else {
+                  return Text('Loading...',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w600
+                    ),);
+                }
+            } 
+          ),
         ),
         
        

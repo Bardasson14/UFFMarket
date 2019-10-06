@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "111460289011-h6ckpkn176tbfvt5mr9f4si62efu8pla.apps.googleusercontent.com",
+          "client_id": "111460289011-o17sa5rdqql2aokeoll52raoucbnpc6t.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.labmoveis.uff_market",
-            "certificate_hash": "a69d7fa95961b72c2614f97c5a07830c1998b060"
+            "certificate_hash": "3b5f22d35a4a1eee155b5b5ac93b49bfd349c278"
           }
         },
         {
