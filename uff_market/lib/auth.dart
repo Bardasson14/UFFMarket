@@ -52,6 +52,12 @@ class AuthService{
      await _googleSignIn.signOut();
   }
 
+  Future<String> getUID() async {
+    final FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    final String uid = user.uid.toString();
+    return uid;
+  }
+
 }
 
 final AuthService authService = AuthService();

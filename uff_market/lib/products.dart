@@ -1,27 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:uff_market/auth.dart';
 
 Color uffBlue = const Color(0xff005AAE);
 String dropdownValue;
 
 class Product {
-  String productID;
   String productName;
-  String photoURL;
   String productDescription;
   String productLocation;
   double productPrice;
   String productSeller;
 
-  String getID(){
-    return this.productID;
-  }
+  Product({this.productName, this.productDescription, this.productLocation, this.productPrice, this.productSeller});
 
   String getName(){
     return this.productName;
-  }
-
-  String getPhotoURL(){
-    return this.photoURL;
   }
 
   String getDescription(){
@@ -44,10 +38,6 @@ class Product {
     this.productName = name;
   }
 
-  void setPhotoURL(String url){
-    this.photoURL = url;
-  }
-
   void setDescription(String description){
     this.productDescription = description;
   }
@@ -62,6 +52,99 @@ class Product {
 
   void setSeller(String seller){
     this.productSeller = seller;
+  }
+
+  createData(){
+    DocumentReference dr = Firestore.instance.collection('products').document();
+    Map <String, dynamic> product = {
+      "productDescription": productDescription,
+      "productLocation": productLocation,
+      "productName": productName,
+      "productPrice": productPrice,
+      "productSeller": productSeller
+    };
+
+    dr.setData(product).whenComplete((){
+      print("Product added to Firestore");
+    });
+  } 
+ }
+
+class ProductName extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    return ProductNameState();
+  }
+
+}
+
+class ProductNameState extends State<ProductName>{
+  final productNameTFController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: productNameTFController,
+      decoration: InputDecoration(
+        hintText: "Nome do Produto..",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+      ),
+    );
+  }
+  
+}
+
+class ProductDescription extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    return ProductDescriptionState();
+  }
+
+}
+
+class ProductDescriptionState extends State<ProductDescription>{
+  final productDescriptionTFController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: productDescriptionTFController,
+      maxLines: null,
+      decoration: InputDecoration(
+        hintText: "Descrição do Produto..",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+      ),
+    );
+  }
+  
+}
+
+class ProductPrice extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    return ProductPriceState();
+  }
+}
+
+class ProductPriceState extends State<ProductPrice>{
+  final productPriceTFController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: productPriceTFController,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        hintText: "Preço do Produto",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        )
+      ),
+    );
   }
 }
 
@@ -78,15 +161,15 @@ class SellProductState extends State<SellProduct>{
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width * 0.4;
     var height = MediaQuery.of(context).size.height * 0.15;
-    
-    
+    Product p;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: uffBlue,
         title: Text("Vender Produtos",
           style: TextStyle(
             color: Colors.white,
-            fontSize: 25),),
+            fontSize: 25)),
         centerTitle: true,
         leading: IconButton(icon: Icon(Icons.arrow_back), 
         onPressed: (){
@@ -98,29 +181,20 @@ class SellProductState extends State<SellProduct>{
         child: Center(
           child: Column(
             children: <Widget>[
-               new Padding(
+              Padding(
                 padding: EdgeInsets.all(height/3),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: "Nome do Produto..",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                  ),
-                ),
+                child: ProductName(),
               ),
 
-              new Padding(
+              Padding(
                 padding: EdgeInsets.all(height/3),
-                child: TextField(
-                  maxLines: null,
-                  decoration: InputDecoration(
-                    hintText: "Descrição do Produto..",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                  ),
-                ),
+                child: 
+                ProductDescription()
+              ),
+
+              Padding(
+                padding: EdgeInsets.all(height/3),
+                child: ProductPrice(),
               ),
               
               Padding(
@@ -139,7 +213,6 @@ class SellProductState extends State<SellProduct>{
                         hint: Text("Escolha o local de venda do produto"),
                         icon: Icon(Icons.arrow_downward),
                         iconSize: 22,
-                        //elevation: 14,
                         onChanged: (newValue){
                           setState(() {
                             dropdownValue = newValue;
@@ -159,7 +232,14 @@ class SellProductState extends State<SellProduct>{
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                onPressed: () => {},
+                onPressed: () async{
+                  p.setDescription(ProductDescriptionState().productDescriptionTFController.text);
+                  p.setName(ProductNameState().productNameTFController.text);
+                  p.setLocation(dropdownValue);
+                  p.setPrice(double.tryParse(ProductPriceState().productPriceTFController.text));
+                  p.setSeller(null);
+                  p.createData();
+                },
                 minWidth: width,
                 height: height/2,
                 color: const Color(0xff005AAE),
@@ -178,6 +258,7 @@ class SellProductState extends State<SellProduct>{
       ),
     );
   }
+
 }
 
 class ChooseBetween extends StatelessWidget{
@@ -199,9 +280,6 @@ class ChooseBetween extends StatelessWidget{
           ),
           centerTitle: true,
         ),
-        /*drawer: Drawer(
-
-        ),*/
         body: Container(
           child: ListView(
             shrinkWrap: true,
@@ -255,60 +333,4 @@ class ChooseBetween extends StatelessWidget{
         ),
     );
   }
-}
-
-class ProductScreen extends StatelessWidget{
-  Product p;
-
-  @override
-  Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width * 0.4;
-    var height = MediaQuery.of(context).size.height * 0.15;
-    return Scaffold(
-      appBar: AppBar(
-          backgroundColor: const Color(0xff005AAE),
-          title: Text(
-            "UFF Market",
-            style: TextStyle(
-              decoration: TextDecoration.none,
-              fontFamily: 'Quicksand',
-              fontSize: 25,
-            ),
-          ),
-          centerTitle: true,
-        ),
-        drawer: Drawer(
-
-        ),
-         
-        body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              
-              Row(children: <Widget>[
-                Text(
-                  p.getName(),
-                  style: TextStyle(
-
-                  ),
-                ),
-                Text(
-                  p.getPrice().toString(),
-                  style: TextStyle(
-
-                  ),
-                )
-              ],),
-              Text(
-                p.getDescription(),
-                style: TextStyle(
-
-                ),
-              ),
-              
-            ],
-          )
-        ),
-    );
-  } 
 }
