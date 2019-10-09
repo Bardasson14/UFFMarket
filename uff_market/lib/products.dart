@@ -14,7 +14,7 @@ class Product {
   String productName;
   String productDescription;
   String productLocation;
-  double productPrice;
+  String productPrice;
   String productSeller;
   String productCategory;
 
@@ -32,7 +32,7 @@ class Product {
     return this.productLocation;
   }
 
-  double getPrice(){
+  String getPrice(){
     return this.productPrice;
   }
 
@@ -56,7 +56,7 @@ class Product {
     this.productLocation = location;
   }
 
-  void setPrice(double price){
+  void setPrice(String price){
     this.productPrice = price;
   }
 
@@ -278,7 +278,7 @@ class SellProductState extends State<SellProduct>{
                 onPressed: () async{
                   String name = productNameTFController.text;
                   String description = productDescriptionTFController.text;
-                  double price = double.tryParse(productPriceTFController.text);
+                  String price = (productPriceTFController.text);
                   String location = dropdownValueLoc;
                   String category = dropdownValueCat;
                   String uid = await authService.getUID();
@@ -407,7 +407,7 @@ class ProductScreenState extends State<ProductScreen>{
   navigatetoDetail(DocumentSnapshot post){
     Navigator.push(context, MaterialPageRoute(
         builder: (context){
-          DetailPage(post: post);
+          return DetailPage(post: post);
         }
       ) 
     );
@@ -450,7 +450,7 @@ class ProductScreenState extends State<ProductScreen>{
                           fontWeight: FontWeight.w800
                         ),),
                         onTap: (){
-                          navigatetoDetail(snapshot.data[index].data);
+                          navigatetoDetail(snapshot.data[index]);
                       }
                   );
               });
@@ -478,22 +478,38 @@ class DetailPage extends StatefulWidget{
 class DetailPageState extends State<DetailPage>{
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          Text(widget.post.data['productName']),
-          Row(children: <Widget>[
-            Text(widget.post.data['productPrice'],
-              style: TextStyle(
-                fontWeight: FontWeight.w800,
-                fontSize:25
-              ),),
-            Text(widget.post.data['productLocation']),
-          ],),
-          Text(widget.post.data['productDescription']),
-        ],
-      ),
-    );
+    return Scaffold(
+      appBar: AppBar(
+          backgroundColor: uffBlue,
+          title: Text(
+            "UFF Market",
+            style: TextStyle(
+              decoration: TextDecoration.none,
+              fontFamily: 'Quicksand',
+              fontSize: 25,
+            ),
+          ),
+          centerTitle: true,
+        ),
+      body: Container(
+        child: Center(
+          child: Column(
+            children: <Widget>[
+              Text(widget.post.data['productName']),
+              /*Row(children: <Widget>[
+                Text(widget.post.data['productPrice'],
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize:25
+                  ),),
+                Text(widget.post.data['productLocation']),
+              ],),
+              */
+              Text(widget.post.data['productDescription']),
+              ],
+            ),
+          ),
+        ),
+      );
   }
-  
 }
