@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:uff_market/auth.dart';
 
 Color uffBlue = const Color(0xff005AAE);
-String dropdownValue;
+String dropdownValueLoc;
+String dropdownValueCat;
+final productNameTFController = TextEditingController();
+final productDescriptionTFController = TextEditingController();
+final productPriceTFController = TextEditingController();
+var db = Firestore.instance;
 
 class Product {
   String productName;
@@ -11,8 +16,9 @@ class Product {
   String productLocation;
   double productPrice;
   String productSeller;
+  String productCategory;
 
-  Product({this.productName, this.productDescription, this.productLocation, this.productPrice, this.productSeller});
+  Product({this.productName, this.productDescription, this.productLocation, this.productPrice, this.productSeller, this.productCategory});
 
   String getName(){
     return this.productName;
@@ -32,6 +38,10 @@ class Product {
 
   String getSeller(){
     return this.productSeller;
+  }
+
+  String getCategory(){
+    return this.productCategory;
   }
 
   void setName(String name){
@@ -54,6 +64,10 @@ class Product {
     this.productSeller = seller;
   }
 
+  void setCategory(String category){
+    this.productCategory = category;
+  }
+
   createData(){
     DocumentReference dr = Firestore.instance.collection('products').document();
     Map <String, dynamic> product = {
@@ -61,7 +75,8 @@ class Product {
       "productLocation": productLocation,
       "productName": productName,
       "productPrice": productPrice,
-      "productSeller": productSeller
+      "productSeller": productSeller,
+      "productCategory": productCategory
     };
 
     dr.setData(product).whenComplete((){
@@ -79,8 +94,7 @@ class ProductName extends StatefulWidget{
 }
 
 class ProductNameState extends State<ProductName>{
-  final productNameTFController = TextEditingController();
-
+  
   @override
   Widget build(BuildContext context) {
     return TextField(
@@ -105,8 +119,7 @@ class ProductDescription extends StatefulWidget{
 }
 
 class ProductDescriptionState extends State<ProductDescription>{
-  final productDescriptionTFController = TextEditingController();
-
+  
   @override
   Widget build(BuildContext context) {
     return TextField(
@@ -131,8 +144,7 @@ class ProductPrice extends StatefulWidget{
 }
 
 class ProductPriceState extends State<ProductPrice>{
-  final productPriceTFController = TextEditingController();
-
+  
   @override
   Widget build(BuildContext context) {
     return TextField(
@@ -161,8 +173,7 @@ class SellProductState extends State<SellProduct>{
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width * 0.4;
     var height = MediaQuery.of(context).size.height * 0.15;
-    Product p;
-
+    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: uffBlue,
@@ -182,23 +193,23 @@ class SellProductState extends State<SellProduct>{
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.all(height/3),
+                padding: EdgeInsets.all(height/4),
                 child: ProductName(),
               ),
 
               Padding(
-                padding: EdgeInsets.all(height/3),
+                padding: EdgeInsets.all(height/4),
                 child: 
                 ProductDescription()
               ),
 
               Padding(
-                padding: EdgeInsets.all(height/3),
+                padding: EdgeInsets.all(height/4),
                 child: ProductPrice(),
               ),
               
               Padding(
-                padding: EdgeInsets.symmetric(vertical: height/2),
+                padding: EdgeInsets.symmetric(vertical: height/3),
                 child:
                   Container(
                     decoration: ShapeDecoration(
@@ -209,13 +220,13 @@ class SellProductState extends State<SellProduct>{
                     ), 
                     child: 
                       DropdownButton<String>(
-                        value: dropdownValue,
+                        value: dropdownValueLoc,
                         hint: Text("Escolha o local de venda do produto"),
                         icon: Icon(Icons.arrow_downward),
                         iconSize: 22,
                         onChanged: (newValue){
                           setState(() {
-                            dropdownValue = newValue;
+                            dropdownValueLoc = newValue;
                           }); 
                         }, 
                         items: <String>['Gragoatá', 'Praia Vermelha', 'IACS', 'Valonguinho',
@@ -228,16 +239,50 @@ class SellProductState extends State<SellProduct>{
                     ),
                   ),
               ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: height/3),
+                child:
+                  Container(
+                    decoration: ShapeDecoration(
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(width:1, style: BorderStyle.solid),
+                        borderRadius: BorderRadius.all(Radius.circular(15))
+                      )
+                    ), 
+                    child: 
+                      DropdownButton<String>(
+                        value: dropdownValueCat,
+                        hint: Text("Escolha a categoria do produto"),
+                        icon: Icon(Icons.arrow_downward),
+                        iconSize: 22,
+                        onChanged: (newValue){
+                          setState(() {
+                            dropdownValueCat = newValue;
+                          }); 
+                        }, 
+                        items: <String>['Doces', 'Salgados', 'Refeições', 'Serviços', 'Outros Produtos'
+                        ].map<DropdownMenuItem<String>>((String value){
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                        }).toList(),
+                    ),
+                  ),
+              ),
+              
               MaterialButton(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                 onPressed: () async{
-                  p.setDescription(ProductDescriptionState().productDescriptionTFController.text);
-                  p.setName(ProductNameState().productNameTFController.text);
-                  p.setLocation(dropdownValue);
-                  p.setPrice(double.tryParse(ProductPriceState().productPriceTFController.text));
-                  p.setSeller(null);
+                  String name = productNameTFController.text;
+                  String description = productDescriptionTFController.text;
+                  double price = double.tryParse(productPriceTFController.text);
+                  String location = dropdownValueLoc;
+                  String category = dropdownValueCat;
+                  String uid = await authService.getUID();
+                  Product p = Product(productDescription: description, productLocation: location, productName: name, productPrice: price, productSeller: uid, productCategory: category);
                   p.createData();
                 },
                 minWidth: width,
@@ -258,7 +303,6 @@ class SellProductState extends State<SellProduct>{
       ),
     );
   }
-
 }
 
 class ChooseBetween extends StatelessWidget{
@@ -282,7 +326,7 @@ class ChooseBetween extends StatelessWidget{
         ),
         body: Container(
           child: ListView(
-            shrinkWrap: true,
+            //shrinkWrap: true,
             children: <Widget>[
 
               Padding(
@@ -333,4 +377,123 @@ class ChooseBetween extends StatelessWidget{
         ),
     );
   }
+}
+
+class ProductScreen extends StatefulWidget{
+
+  
+  @override
+  State<StatefulWidget> createState() {
+    return ProductScreenState();
+  }
+}
+
+class ProductScreenState extends State<ProductScreen>{
+  static String filter;
+  Future _data;
+
+  @override
+  void initState(){
+    super.initState();
+    _data = getPosts();
+  }
+  
+  Future getPosts() async{
+    var firestore = Firestore.instance;
+    QuerySnapshot qs = await firestore.collection("products")/*.where('productCategory', isEqualTo: filter)*/.getDocuments();
+    return qs.documents;
+  }
+
+  navigatetoDetail(DocumentSnapshot post){
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context){
+          DetailPage(post: post);
+        }
+      ) 
+    );
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          backgroundColor: uffBlue,
+          title: Text(
+            "UFF Market",
+            style: TextStyle(
+              decoration: TextDecoration.none,
+              fontFamily: 'Quicksand',
+              fontSize: 25,
+            ),
+          ),
+          centerTitle: true,
+        ),
+      body: Container(
+        child: FutureBuilder(
+            future: _data,
+            builder: (_, snapshot){
+              if (!snapshot.hasData)
+                return Center(
+                  child: Text("Loading")
+                );
+              else{
+                return ListView.builder(  
+                  shrinkWrap: true,
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (_, index){
+                    return ListTile(
+                      title: Text(snapshot.data[index].data['productName']),
+                      subtitle: Text(snapshot.data[index].data['productLocation']),
+                      trailing: Text(snapshot.data[index].data['productPrice'].toString(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800
+                        ),),
+                        onTap: (){
+                          navigatetoDetail(snapshot.data[index].data);
+                      }
+                  );
+              });
+            
+              }
+          }),
+        )
+    
+    );
+  }
+}
+
+class DetailPage extends StatefulWidget{
+
+  final DocumentSnapshot post;
+  
+  DetailPage({this.post});
+
+  @override
+  State<StatefulWidget> createState() {
+    return DetailPageState();
+  } 
+}
+
+class DetailPageState extends State<DetailPage>{
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Text(widget.post.data['productName']),
+          Row(children: <Widget>[
+            Text(widget.post.data['productPrice'],
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+                fontSize:25
+              ),),
+            Text(widget.post.data['productLocation']),
+          ],),
+          Text(widget.post.data['productDescription']),
+        ],
+      ),
+    );
+  }
+  
 }

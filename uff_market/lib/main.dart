@@ -11,6 +11,7 @@ void main() => runApp(MainApp());
 Color uffBlue = const Color(0xff005AAE);
 
 class MainApp extends StatefulWidget{
+  
   @override
   State<StatefulWidget> createState() {
     return _MainAppState();
@@ -19,6 +20,7 @@ class MainApp extends StatefulWidget{
 
 class _MainAppState extends State<MainApp>{
   
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: LoginPage()
@@ -138,7 +140,6 @@ Widget build(BuildContext context) {
           SizedBox(
             width: width,
             height: height,
-            
             child: MaterialButton(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
@@ -181,7 +182,13 @@ Widget build(BuildContext context) {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-            onPressed: () => {},
+            onPressed: () => {
+              ProductScreenState.filter = "Serviços",
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProductScreen())
+              )
+            },
             minWidth: width,
             height: height,
             color: const Color(0xff005AAE),
