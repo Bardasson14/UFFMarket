@@ -11,14 +11,16 @@ void main() => runApp(MainApp());
 Color uffBlue = const Color(0xff005AAE);
 
 class MainApp extends StatefulWidget{
+  
   @override
   State<StatefulWidget> createState() {
     return _MainAppState();
   }  
 }
-
+ 
 class _MainAppState extends State<MainApp>{
   
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: LoginPage()
@@ -42,6 +44,7 @@ class HomePage extends StatelessWidget{
           children: <Widget>[
               ListTile(contentPadding: EdgeInsets.only(top:height/4),),
               ListTile(
+                
                 leading: Text("Sair",
                   style: TextStyle(
                     fontSize: 20,
@@ -138,7 +141,6 @@ Widget build(BuildContext context) {
           SizedBox(
             width: width,
             height: height,
-            
             child: MaterialButton(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
@@ -164,10 +166,17 @@ Widget build(BuildContext context) {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-            onPressed: () => {},
+            onPressed: () => {
+              ProductScreenState.filter = "Refeições",
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProductScreen())
+              )
+            },
             minWidth: width,
             height: height,
             color: const Color(0xff005AAE),
+            
             child: Text(
               "Refeições",
               style: TextStyle(
@@ -181,7 +190,13 @@ Widget build(BuildContext context) {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-            onPressed: () => {},
+            onPressed: () => {
+              ProductScreenState.filter = "Serviços",
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProductScreen())
+              )
+            },
             minWidth: width,
             height: height,
             color: const Color(0xff005AAE),
@@ -198,7 +213,13 @@ Widget build(BuildContext context) {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-            onPressed: () => {},
+            onPressed: () => {
+              ProductScreenState.filter = "Outros Produtos",
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProductScreen())
+              )
+            },
             minWidth: width,
             height: height,
             color: const Color(0xff005AAE),
