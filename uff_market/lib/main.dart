@@ -17,7 +17,7 @@ class MainApp extends StatefulWidget{
     return _MainAppState();
   }  
 }
-
+ 
 class _MainAppState extends State<MainApp>{
   
   @override
@@ -44,6 +44,7 @@ class HomePage extends StatelessWidget{
           children: <Widget>[
               ListTile(contentPadding: EdgeInsets.only(top:height/4),),
               ListTile(
+                
                 leading: Text("Sair",
                   style: TextStyle(
                     fontSize: 20,
@@ -165,10 +166,17 @@ Widget build(BuildContext context) {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-            onPressed: () => {},
+            onPressed: () => {
+              ProductScreenState.filter = "Refeições",
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProductScreen())
+              )
+            },
             minWidth: width,
             height: height,
             color: const Color(0xff005AAE),
+            
             child: Text(
               "Refeições",
               style: TextStyle(
@@ -205,7 +213,13 @@ Widget build(BuildContext context) {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-            onPressed: () => {},
+            onPressed: () => {
+              ProductScreenState.filter = "Outros Produtos",
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProductScreen())
+              )
+            },
             minWidth: width,
             height: height,
             color: const Color(0xff005AAE),
