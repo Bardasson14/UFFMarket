@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker_modern/image_picker_modern.dart';
 import 'package:uff_market/auth.dart';
 import 'package:path/path.dart';
+import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 
 Color uffBlue = const Color(0xff005AAE);
@@ -16,7 +19,18 @@ final productDescriptionTFController = TextEditingController();
 final productPriceTFController = TextEditingController();
 var db = Firestore.instance;
 
+class utils {
+    static final Random _random = Random.secure();
+
+    static String CreateCryptoRandomString([int length = 32]) {
+        var values = List<int>.generate(length, (i) => _random.nextInt(256));
+
+        return base64Url.encode(values);
+    }
+}
+
 class Product {
+  String productID;
   String productName;
   String productDescription;
   String productLocation;
@@ -24,8 +38,10 @@ class Product {
   String productSeller;
   String productCategory;
   String pictureID;
+  double avgScore;
+  int scoresGiven;
 
-  Product({this.productName, this.productDescription, this.productLocation, this.productPrice, this.productSeller, this.productCategory, this.pictureID});
+  Product({this.productID, this.productName, this.productDescription, this.productLocation, this.productPrice, this.productSeller, this.productCategory, this.pictureID, this.avgScore, this.scoresGiven});
 
   String getName(){
     return this.productName;
@@ -83,22 +99,38 @@ class Product {
     this.pictureID = pictureID;
   }
 
-  createData(){
-    DocumentReference dr = Firestore.instance.collection('products').document();
+  createData(String id){
+    DocumentReference docRef = Firestore.instance.collection('products').document(id);
     Map <String, dynamic> product = {
+      "productID": productID,
       "productDescription": productDescription,
       "productLocation": productLocation,
       "productName": productName,
       "productPrice": productPrice,
       "productSeller": productSeller,
       "productCategory": productCategory,
-      "pictureID": pictureID
+      "pictureID": pictureID,
+      "avgScore": avgScore,
+      "scoresGiven": scoresGiven
     };
-
-    dr.setData(product).whenComplete((){
-      print("Product added to Firestore");
-    });
+   
+   docRef.setData(product).whenComplete((){
+     print("Product added to firestore");
+   });
   } 
+
+  Product.fromJson(Map json){
+    this.productID = json["productID"];
+    this.productDescription = json["productDescription"];
+    this.productLocation = json["productLocation"];
+    this.productName = json["productName"];
+    this.productPrice = json["productPrice"];
+    this.productSeller = json["productSeller"];
+    this.productCategory = json["productCategory"];
+    this.avgScore = double.parse(json["avgScore"].toString());
+    this.scoresGiven =int.parse(json["scoresGiven"].toString());
+    this.pictureID = json["pictureID"];
+  }  
  }
 
 class ProductName extends StatefulWidget{
@@ -310,15 +342,17 @@ class SellProductState extends State<SellProduct>{
                   ),
                 onPressed: () async{
                   String name = productNameTFController.text;
-                  String pictureID = await uploadPic(context);
                   String description = productDescriptionTFController.text;
                   String price = (productPriceTFController.text);
                   String location = dropdownValueLoc;
                   String category = dropdownValueCat;
                   String uid = await authService.getUID();
-                  Product p = Product(productDescription: description, productLocation: location, productName: name, productPrice: price, productSeller: uid, productCategory: category, pictureID: pictureID);
-                  p.createData();
-                  //Scaffold.of(context).showSnackBar(SnackBar(content: Text("Produto vendido!")));
+                  int scoresGiven = 0;
+                  double avgScore = 0;
+                  String id = utils.CreateCryptoRandomString(20);
+                  String pictureID = await uploadPic(context);
+                  Product p = Product(productID: id, productDescription: description, productLocation: location, productName: name, productPrice: price, productSeller: uid, productCategory: category, pictureID: pictureID, scoresGiven: scoresGiven, avgScore: avgScore);
+                  p.createData(id);
                   productDescriptionTFController.text = "";
                   productNameTFController.text = "";
                   productPriceTFController.text = "";
@@ -568,6 +602,35 @@ class ProductScreenState extends State<ProductScreen>{
   }
 }
 
+
+
+class Rating{
+  String uid;
+  String productID;
+  double rating;
+
+  Rating({this.uid, this.productID, this.rating});
+
+  String createData(){
+    DocumentReference dr = Firestore.instance.collection('ratings').document();
+    Map <String, dynamic> r = {
+      "productID": productID,
+      "uid": uid, 
+      "rating": rating
+    };
+
+    dr.setData(r).whenComplete((){
+      print("Rating added to Firestore");
+    });
+  }
+
+  Rating.fromJson(Map json){
+    this.productID = json["productID"];
+    this.uid = json["uid"];
+    this.rating = double.parse(json["rating"].toString());
+  }  
+}
+
 class DetailPage extends StatefulWidget{
 
   final DocumentSnapshot post;
@@ -581,19 +644,24 @@ class DetailPage extends StatefulWidget{
 }
 
 class DetailPageState extends State<DetailPage>{
+
+  static String productID; 
   
   Future<String> getURL(StorageReference ref) async{
     var url = await ref.getDownloadURL();
     print(url.toString());
     return url;
   }
-  
+
+
   @override
   Widget build(BuildContext context) {
+    productID = widget.post.data['productID'];
     StorageReference ref = FirebaseStorage.instance.ref().child("${widget.post.data['pictureID']}");
     Future<String> url = getURL(ref).whenComplete((){
       print("ok");
     });
+    
     var height = MediaQuery.of(context).size.height * 0.15;
     return Scaffold(
       appBar: AppBar(
@@ -629,7 +697,6 @@ class DetailPageState extends State<DetailPage>{
                           child: SizedBox(
                             width: MediaQuery.of(context).size.width,
                             height: MediaQuery.of(context).size.height/2,
-                            
                             child: Center(
                               child: Text("Sem Imagens disponíveis",
                               style: TextStyle(
@@ -677,6 +744,12 @@ class DetailPageState extends State<DetailPage>{
                   )
                 ),
                 
+                SmoothStarRating(
+                  
+                    rating: (widget.post.data['avgScore']),
+                    color: uffBlue,
+                  ),
+                  
                   /*Padding(
                     padding: EdgeInsets.all(height/4),
                     child: ),*/
@@ -700,13 +773,165 @@ class DetailPageState extends State<DetailPage>{
                               fontSize: 18,
                     ),))
                   ),
+                    
                     ],
-                  )
+                  ),
+
+                  RaisedButton(
+                      color: uffBlue,
+                      onPressed: (){
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: Text("Nota"),
+                            content: StarRating(),
+                          )
+                        );
+                      },
+                      child: Text(
+                        "Avalie o Produto",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20
+                        ),
+                      )
+                    ),
                 ],
               ),
             ),
           ),
         
       );
+  }
+}
+
+class StarRating extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    return StarRatingState();
+  }
+}
+
+class StarRatingState extends State<StarRating>{
+
+  double v=2;
+  static double rating=3;
+  static String productID;
+  CollectionReference ratingsRef = db.collection("ratings");
+  CollectionReference productsRef = db.collection("products");
+  double totalScore = 0.0;
+
+  Future<double> qs2 = db.collection("ratings")
+          .where("productID", isEqualTo: productID).getDocuments().then((qs2){
+            double tS = 0;
+            for (DocumentSnapshot doc in qs2.documents){
+              Rating r = Rating.fromJson(doc.data);
+              /*print("r[uid] = " + r.uid);
+              print("r[productID] = " + r.productID);
+              print("r[rating] = " + r.rating.toString());*/
+              tS += r.rating; 
+            }
+            return tS;
+    });
+        
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 100,
+      width: 80,
+      child: Column(children: <Widget>[
+        SmoothStarRating(
+          rating: rating,
+          allowHalfRating: true,
+          starCount: 5,
+          size: 40.0,
+          color: uffBlue,
+          borderColor: uffBlue,
+          spacing:0.0,
+          onRatingChanged: (v){
+            setState((){rating = v;});
+          } ,
+        ),
+        Padding(
+          padding: EdgeInsets.all(5),
+        ),
+        RaisedButton(
+          color: uffBlue,
+          child: Text("Enviar!",
+            style: TextStyle(color: Colors.white)),
+          onPressed: () { 
+            setRating(rating, DetailPageState.productID);
+            Navigator.pop(context);
+            //DetailPage(post: );
+          },
+        )
+      ],)
+    );
+  }
+
+  setRating(double rating, productID) async{
+    String uid = await authService.getUID();
+    bool inDB = false;
+    double sum = await qs2;
+        
+    setState(() {
+        StarRatingState.rating = rating;
+        
+        Future<QuerySnapshot> qs1 = db.collection("ratings")
+          .where("productID", isEqualTo: productID)
+          .where("uid", isEqualTo: uid).getDocuments().then((qs1){
+              //SE A AVALIAÇÃO NÃO ESTIVER NA TABELA, CRIAR RATING
+              if (qs1.documents.isEmpty){
+                Rating r = Rating(rating: rating, uid: uid, productID: productID);
+                r.createData();
+              }
+              //SE A AVALIAÇÃO ESTIVER NO FIRESTORE, APENAS MODIFICÁ-LA
+              else {
+                inDB = true;
+                for (DocumentSnapshot doc in qs1.documents){
+                  Map <String, dynamic> r = {
+                    "productID": productID,
+                    "uid": uid, 
+                    "rating": rating
+                  };
+                  db.collection("ratings").document(doc.documentID).updateData(r);
+                }
+              }
+            }
+          );
+
+        this.totalScore = 0;
+        
+        
+        print("sum = " + sum.toString());
+        db.collection("products").where("productID", isEqualTo: productID).getDocuments().then(
+          (querySnapshot) {
+          for (DocumentSnapshot doc in querySnapshot.documents){
+            Product p = Product.fromJson(doc.data);
+              //if (inDB == false) p.scoresGiven ++;
+              
+              //print(this.totalScore.toString());
+              p.avgScore = double.parse((sum / p.scoresGiven).toStringAsFixed(2));
+              print("this.totalScore = " + this.totalScore.toString());
+        
+              Map<String, dynamic> mapProduct = {
+                "productName": p.getName(),
+                "productDescription": p.getDescription(),
+                "productCategory": p.getCategory(),
+                "productPrice": p.getPrice(),
+                "productSeller": p.getSeller(),
+                "productLocation": p.getLocation(),
+                "avgScore": p.avgScore,
+                "scoresGiven": p.scoresGiven,
+                "pictureID": p.pictureID
+              };
+
+              db.collection("products").document(doc.documentID).updateData(mapProduct).whenComplete((){
+                print(mapProduct["avgScore"]);
+                print("modificated\n");
+              });}
+          });
+      });
+      
   }
 }
