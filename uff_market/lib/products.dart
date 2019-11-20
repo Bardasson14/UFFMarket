@@ -267,6 +267,7 @@ class SellProduct extends StatefulWidget {
 
 class SellProductState extends State<SellProduct> {
   static File _image;
+  
 
   Future<String> uploadPic(BuildContext context) async {
     String fileName = basename(_image.path);
@@ -282,9 +283,12 @@ class SellProductState extends State<SellProduct> {
     var width = MediaQuery.of(context).size.width * 0.4;
     var height = MediaQuery.of(context).size.height * 0.15;
     var _firstPress = true;
+    final _scaffoldKey = GlobalKey<ScaffoldState>();
+
     AddPictureState.height = height / 2;
     AddPictureState.width = width;
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: uffBlue,
         title: Text("Vender Produtos",
@@ -390,8 +394,11 @@ class SellProductState extends State<SellProduct> {
                 String price = (productPriceTFController.text);
                 String location = dropdownValueLoc;
                 String category = dropdownValueCat;
-                
-                if (_firstPress && name != "" && description != "" && price != ""){
+
+                if (_firstPress &&
+                    name != "" &&
+                    description != "" &&
+                    price != "") {
                   _firstPress = false;
                   String additionalInfo = additionalInfoTFController.text;
                   String uid = await authService.getUID();
@@ -426,8 +433,18 @@ class SellProductState extends State<SellProduct> {
                   dropdownValueCat = "Doces";
                   pictureID = "";
                   Navigator.pop(context, true);
-                  }
-                  
+                } else {
+                  _scaffoldKey.currentState.showSnackBar(SnackBar(
+                    content:
+                        Text('Nome, descrição e preço devem ser informados!'),
+                    action: SnackBarAction(
+                      label: 'Fechar',
+                      onPressed: () {
+                        _scaffoldKey.currentState.removeCurrentSnackBar();
+                      },
+                    ),
+                  ));
+                }
               },
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
@@ -627,7 +644,6 @@ class ProductScreenState extends State<ProductScreen> {
                                   snapshot.data[index].data['productPrice'],
                               style: TextStyle(fontWeight: FontWeight.w800),
                             ),
-                            
                             onTap: () {
                               navigatetoDetail(snapshot.data[index], context);
                             });
@@ -790,12 +806,12 @@ class DetailPageState extends State<DetailPage> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: height / 6),
                 child: Text("Vendedor: " + widget.post.data['sellerName'],
-                      style: TextStyle(
-                          //decoration: TextDecoration.underline,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          color: uffBlue)),
-                  /*onTap: () {
+                    style: TextStyle(
+                        //decoration: TextDecoration.underline,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: uffBlue)),
+                /*onTap: () {
                     //String phoneNumber = seller['phoneNumber'];
                     showDialog(
                         context: context,
@@ -848,7 +864,6 @@ class DetailPageState extends State<DetailPage> {
                                   ))),
                             ));
                   },*/
-                
               ),
               Row(
                 children: <Widget>[
@@ -1085,7 +1100,8 @@ class StarRatingState extends State<StarRating> {
           "pictureID": p.pictureID
         };
 
-        db.collection("products")
+        db
+            .collection("products")
             .document(doc.documentID)
             .updateData(mapProduct)
             .whenComplete(() {
