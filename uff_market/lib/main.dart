@@ -40,19 +40,19 @@ class HomePage extends StatelessWidget {
                 contentPadding: EdgeInsets.only(top: height / 4),
               ),
               ListTile(
-                  leading: Text("Minha conta",
-                      style: TextStyle(
-                        fontSize: 15,
-                      )),
-                  trailing: Icon(
-                    FontAwesomeIcons.user,
-                    color: uffBlue,
-                  ),
-                  /*onTap: () async{
-                    ProfilePageState.uid = await authService.getUID();
+                leading: Text("Minha conta",
+                    style: TextStyle(
+                      fontSize: 15,
+                    )),
+                trailing: Icon(
+                  FontAwesomeIcons.user,
+                  color: uffBlue,
+                ),
+                onTap: () async{
                     Navigator.push(context,
                       MaterialPageRoute(builder: (context) => ProfilePage()));
-                  }*/),
+                  }
+              ),
               ListTile(
                 leading: Text(
                   "Sair",
@@ -85,6 +85,8 @@ class HomePage extends StatelessWidget {
           centerTitle: true,
         ),
         body: Column(
+          //crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             new Padding(
               padding: EdgeInsets.symmetric(vertical: height / 3),
@@ -108,20 +110,24 @@ class HomePage extends StatelessWidget {
                     }
                   }),
             ),
-            new Expanded(child: ButtonGrid()),
-            FloatingActionButton(
-              backgroundColor: uffBlue,
-              child: Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) {
-                  return SellProduct();
-                }));
-              },
-            )
+            Center(child: ButtonGrid()),
+            
+            Padding(
+                padding: EdgeInsets.only(bottom: 10),
+                child: FloatingActionButton(
+                  elevation: 0,
+                  backgroundColor: uffBlue,
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) {
+                      return SellProduct();
+                    }));
+                  },
+                ))
           ],
         ));
   }
@@ -135,6 +141,7 @@ class ButtonGrid extends StatelessWidget {
     return GridView.count(
       childAspectRatio: width / height,
       padding: EdgeInsets.all(10),
+      shrinkWrap: true,
       crossAxisCount: 2,
       crossAxisSpacing: 5,
       mainAxisSpacing: 5,

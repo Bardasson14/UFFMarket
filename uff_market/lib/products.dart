@@ -46,7 +46,7 @@ class Product {
   String productPrice;
   String productSeller;
   String sellerName;
-  String sellerNumber;
+  //String sellerNumber;
   String productCategory;
   String pictureID;
   String additionalInfo;
@@ -65,7 +65,7 @@ class Product {
       this.avgScore,
       this.scoresGiven,
       this.sellerName,
-      this.sellerNumber,
+      //this.sellerNumber,
       this.additionalInfo});
 
   String getName() {
@@ -134,7 +134,7 @@ class Product {
       "productName": productName,
       "productPrice": productPrice,
       "productSeller": productSeller,
-      "sellerNumber": sellerNumber,
+      //"sellerNumber": sellerNumber,
       "sellerName": sellerName,
       "productCategory": productCategory,
       "additionalInfo": additionalInfo,
@@ -156,7 +156,7 @@ class Product {
     this.productPrice = json["productPrice"];
     this.productSeller = json["productSeller"];
     this.sellerName = json["sellerName"];
-    this.sellerNumber = json["sellerNumber"];
+    //this.sellerNumber = json["sellerNumber"];
     this.additionalInfo = json["additionalInfo"];
     this.productCategory = json["productCategory"];
     this.avgScore = double.parse(json["avgScore"].toString());
@@ -281,6 +281,7 @@ class SellProductState extends State<SellProduct> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width * 0.4;
     var height = MediaQuery.of(context).size.height * 0.15;
+    var _firstPress = true;
     AddPictureState.height = height / 2;
     AddPictureState.width = width;
     return Scaffold(
@@ -384,15 +385,19 @@ class SellProductState extends State<SellProduct> {
             padding: EdgeInsets.symmetric(vertical: height / 6),
             child: MaterialButton(
               onPressed: () async {
-                var currentUser = await FirebaseAuth.instance.currentUser();
-                String phone = currentUser.phoneNumber;
-                String name = productNameTFController.text;
+                if (_firstPress){
+                  _firstPress = false;
+                  String name = productNameTFController.text;
                 String description = productDescriptionTFController.text;
                 String price = (productPriceTFController.text);
                 String location = dropdownValueLoc;
                 String category = dropdownValueCat;
                 String additionalInfo = additionalInfoTFController.text;
                 String uid = await authService.getUID();
+                var currentUser = await FirebaseAuth.instance.currentUser();
+                //print(currentUser.phoneNumber);
+                //String phone = currentUser.phoneNumber;
+                //print("phone = " + phone);
                 String sellerName = await currentUser.displayName;
                 int scoresGiven = 0;
                 double avgScore = 0;
@@ -410,8 +415,7 @@ class SellProductState extends State<SellProduct> {
                     scoresGiven: scoresGiven,
                     avgScore: avgScore,
                     additionalInfo: additionalInfo,
-                    sellerName: sellerName,
-                    sellerNumber: phone);
+                    sellerName: sellerName);
                 p.createData(id);
                 productDescriptionTFController.text = "";
                 productNameTFController.text = "";
@@ -421,6 +425,8 @@ class SellProductState extends State<SellProduct> {
                 dropdownValueCat = "Doces";
                 pictureID = "";
                 Navigator.pop(context, true);
+                }
+                
               },
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
@@ -620,6 +626,7 @@ class ProductScreenState extends State<ProductScreen> {
                                   snapshot.data[index].data['productPrice'],
                               style: TextStyle(fontWeight: FontWeight.w800),
                             ),
+                            
                             onTap: () {
                               navigatetoDetail(snapshot.data[index], context);
                             });
@@ -706,6 +713,7 @@ class DetailPageState extends State<DetailPage> {
       body: Container(
         child: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               FutureBuilder(
                   future: url,
@@ -780,34 +788,45 @@ class DetailPageState extends State<DetailPage> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: height / 6),
-                child: InkWell(
-                  child: Text("Vendedor: " + widget.post.data['sellerName'],
+                child: Text("Vendedor: " + widget.post.data['sellerName'],
                       style: TextStyle(
-                          decoration: TextDecoration.underline,
+                          //decoration: TextDecoration.underline,
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
                           color: uffBlue)),
-                  onTap: () {
+                  /*onTap: () {
                     //String phoneNumber = seller['phoneNumber'];
                     showDialog(
                         context: context,
                         builder: (BuildContext context) => AlertDialog(
                               title: Text("+ Informações"),
                               content: SizedBox(
-                                  height: 100,
+                                  height: 160,
                                   width: 100,
                                   child: Container(
                                       child: Column(
                                     children: <Widget>[
-                                      Text('Vendedor: ' + widget.post.data['sellerName'],
+                                      Text(
+                                          'Vendedor: ' +
+                                              widget.post.data['sellerName'],
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 18)),
+                                      Text(
+                                          '\n\nTelefone: ' +
+                                              widget.post.data['sellerNumber'],
                                           style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 18)),
                                       Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: <Widget>[
                                           IconButton(
-                                            icon: Icon(FontAwesomeIcons.phone,
-                                              color: uffBlue,),
+                                            icon: Icon(
+                                              FontAwesomeIcons.phone,
+                                              color: uffBlue,
+                                            ),
                                             onPressed: () {
                                               c.call(widget
                                                   .post.data['sellerNumber']);
@@ -816,7 +835,7 @@ class DetailPageState extends State<DetailPage> {
                                           ),
                                           IconButton(
                                             icon: Icon(FontAwesomeIcons.sms,
-                                              color: uffBlue),
+                                                color: uffBlue),
                                             onPressed: () {
                                               c.sendSms(widget
                                                   .post.data['sellerNumber']);
@@ -827,8 +846,8 @@ class DetailPageState extends State<DetailPage> {
                                     ],
                                   ))),
                             ));
-                  },
-                ),
+                  },*/
+                
               ),
               Row(
                 children: <Widget>[
@@ -838,6 +857,7 @@ class DetailPageState extends State<DetailPage> {
                         widget.post.data['productLocation'],
                         style: TextStyle(
                           fontSize: 18,
+                          fontWeight: FontWeight.w700,
                         ),
                       )),
                   Flexible(
@@ -1047,6 +1067,7 @@ class StarRatingState extends State<StarRating> {
         if (inDB == false) p.scoresGiven++;
         print("sum = " + sum.toString());
         //print(this.totalScore.toString());
+        print("for 2 sum = " + sum.toString());
         p.avgScore = double.parse((sum / p.scoresGiven).toStringAsFixed(1));
         print("p.avgScore = " + p.avgScore.toString());
         //print("this.totalScore = " + this.totalScore.toString());
@@ -1063,8 +1084,7 @@ class StarRatingState extends State<StarRating> {
           "pictureID": p.pictureID
         };
 
-        db
-            .collection("products")
+        db.collection("products")
             .document(doc.documentID)
             .updateData(mapProduct)
             .whenComplete(() {
