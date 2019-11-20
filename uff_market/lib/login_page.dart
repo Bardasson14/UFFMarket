@@ -34,15 +34,16 @@ class _LoginPageState extends State<LoginPage>{
           color: uffBlue,
         ),),
       onPressed: (){
-        
-        authService.handleSignIn().whenComplete((){
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context){
-                return HomePage();
-              }
-            )
-          );
+        authService.handleSignIn().then((authService){
+          if (authService != null){
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context){
+                  return HomePage();
+                }
+              )
+            );
+          }
         });
       },      
     );
