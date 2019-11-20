@@ -385,48 +385,49 @@ class SellProductState extends State<SellProduct> {
             padding: EdgeInsets.symmetric(vertical: height / 6),
             child: MaterialButton(
               onPressed: () async {
-                if (_firstPress){
-                  _firstPress = false;
-                  String name = productNameTFController.text;
+                String name = productNameTFController.text;
                 String description = productDescriptionTFController.text;
                 String price = (productPriceTFController.text);
                 String location = dropdownValueLoc;
                 String category = dropdownValueCat;
-                String additionalInfo = additionalInfoTFController.text;
-                String uid = await authService.getUID();
-                var currentUser = await FirebaseAuth.instance.currentUser();
-                //print(currentUser.phoneNumber);
-                //String phone = currentUser.phoneNumber;
-                //print("phone = " + phone);
-                String sellerName = await currentUser.displayName;
-                int scoresGiven = 0;
-                double avgScore = 0;
-                String id = utils.CreateCryptoRandomString(20);
-                String pictureID = await uploadPic(context);
-                Product p = Product(
-                    productID: id,
-                    productDescription: description,
-                    productLocation: location,
-                    productName: name,
-                    productPrice: price,
-                    productSeller: uid,
-                    productCategory: category,
-                    pictureID: pictureID,
-                    scoresGiven: scoresGiven,
-                    avgScore: avgScore,
-                    additionalInfo: additionalInfo,
-                    sellerName: sellerName);
-                p.createData(id);
-                productDescriptionTFController.text = "";
-                productNameTFController.text = "";
-                productPriceTFController.text = "";
-                additionalInfoTFController.text = "";
-                dropdownValueLoc = "Gragoatá";
-                dropdownValueCat = "Doces";
-                pictureID = "";
-                Navigator.pop(context, true);
-                }
                 
+                if (_firstPress && name != "" && description != "" && price != ""){
+                  _firstPress = false;
+                  String additionalInfo = additionalInfoTFController.text;
+                  String uid = await authService.getUID();
+                  var currentUser = await FirebaseAuth.instance.currentUser();
+                  //print(currentUser.phoneNumber);
+                  //String phone = currentUser.phoneNumber;
+                  //print("phone = " + phone);
+                  String sellerName = await currentUser.displayName;
+                  int scoresGiven = 0;
+                  double avgScore = 0;
+                  String id = utils.CreateCryptoRandomString(20);
+                  String pictureID = await uploadPic(context);
+                  Product p = Product(
+                      productID: id,
+                      productDescription: description,
+                      productLocation: location,
+                      productName: name,
+                      productPrice: price,
+                      productSeller: uid,
+                      productCategory: category,
+                      pictureID: pictureID,
+                      scoresGiven: scoresGiven,
+                      avgScore: avgScore,
+                      additionalInfo: additionalInfo,
+                      sellerName: sellerName);
+                  p.createData(id);
+                  productDescriptionTFController.text = "";
+                  productNameTFController.text = "";
+                  productPriceTFController.text = "";
+                  additionalInfoTFController.text = "";
+                  dropdownValueLoc = "Gragoatá";
+                  dropdownValueCat = "Doces";
+                  pictureID = "";
+                  Navigator.pop(context, true);
+                  }
+                  
               },
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
