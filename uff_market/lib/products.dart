@@ -50,7 +50,6 @@ class Product {
   String productPrice;
   String productSeller;
   String sellerName;
-  //String sellerNumber;
   String productCategory;
   String pictureID;
   String additionalInfo;
@@ -69,7 +68,6 @@ class Product {
       this.avgScore,
       this.scoresGiven,
       this.sellerName,
-      //this.sellerNumber,
       this.additionalInfo});
 
   String getName() {
@@ -137,7 +135,6 @@ class Product {
       "productName": productName,
       "productPrice": productPrice,
       "productSeller": productSeller,
-      //"sellerNumber": sellerNumber,
       "sellerName": sellerName,
       "productCategory": productCategory,
       "additionalInfo": additionalInfo,
@@ -159,7 +156,6 @@ class Product {
     this.productPrice = json["productPrice"];
     this.productSeller = json["productSeller"];
     this.sellerName = json["sellerName"];
-    //this.sellerNumber = json["sellerNumber"];
     this.additionalInfo = json["additionalInfo"];
     this.productCategory = json["productCategory"];
     this.avgScore = double.parse(json["avgScore"].toString());
@@ -171,7 +167,6 @@ class Product {
 class ProductName extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return ProductNameState();
   }
   
@@ -224,7 +219,6 @@ class ProductDescriptionState extends State<ProductDescription>{
 class ProductPrice extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return ProductPriceState();
   }
 }
@@ -261,7 +255,6 @@ class AdditionalInfoState extends State<AdditionalInfo> {
       
       maxLength: 80,
       controller: additionalInfoTFController,
-      //keyboardType: TextInputType.number,
       decoration: InputDecoration(
           hintText:
               "Informações adicionais (ex.: localização, telefone p/contato)",
@@ -418,9 +411,6 @@ class SellProductState extends State<SellProduct> {
                   String additionalInfo = additionalInfoTFController.text;
                   String uid = await authService.getUID();
                   var currentUser = await FirebaseAuth.instance.currentUser();
-                  //print(currentUser.phoneNumber);
-                  //String phone = currentUser.phoneNumber;
-                  //print("phone = " + phone);
                   String sellerName = await currentUser.displayName;
                   int scoresGiven = 0;
                   double avgScore = 0;
@@ -541,7 +531,6 @@ class ChooseBetween extends StatelessWidget {
       ),
       body: Container(
         child: ListView(
-            //shrinkWrap: true,
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.only(top: height / 2),
@@ -719,8 +708,7 @@ class DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     productID = widget.post.data['productID'];
-    //var seller = authService
-
+    
     StorageReference ref = FirebaseStorage.instance
         .ref()
         .child("${widget.post.data['pictureID']}");
@@ -822,63 +810,9 @@ class DetailPageState extends State<DetailPage> {
                 padding: EdgeInsets.symmetric(vertical: height / 6),
                 child: Text("Vendedor: " + widget.post.data['sellerName'],
                     style: TextStyle(
-                        //decoration: TextDecoration.underline,
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         color: uffBlue)),
-                /*onTap: () {
-                    //String phoneNumber = seller['phoneNumber'];
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                              title: Text("+ Informações"),
-                              content: SizedBox(
-                                  height: 160,
-                                  width: 100,
-                                  child: Container(
-                                      child: Column(
-                                    children: <Widget>[
-                                      Text(
-                                          'Vendedor: ' +
-                                              widget.post.data['sellerName'],
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 18)),
-                                      Text(
-                                          '\n\nTelefone: ' +
-                                              widget.post.data['sellerNumber'],
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 18)),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          IconButton(
-                                            icon: Icon(
-                                              FontAwesomeIcons.phone,
-                                              color: uffBlue,
-                                            ),
-                                            onPressed: () {
-                                              c.call(widget
-                                                  .post.data['sellerNumber']);
-                                              //c.call(/*numero do vendedor*/ )
-                                            },
-                                          ),
-                                          IconButton(
-                                            icon: Icon(FontAwesomeIcons.sms,
-                                                color: uffBlue),
-                                            onPressed: () {
-                                              c.sendSms(widget
-                                                  .post.data['sellerNumber']);
-                                            },
-                                          )
-                                        ],
-                                      )
-                                    ],
-                                  ))),
-                            ));
-                  },*/
               ),
               Row(
                 children: <Widget>[
@@ -892,7 +826,6 @@ class DetailPageState extends State<DetailPage> {
                         ),
                       )),
                   Flexible(
-                      //padding: EdgeInsets.all(height/4),
                       child: Padding(
                           padding: EdgeInsets.all(height / 5),
                           child: Text(
@@ -978,9 +911,8 @@ class RatingConfirmState extends State<RatingConfirm> {
       onPressed: () async {
         await StarRatingState()
             .setRating(StarRatingState.rating, DetailPageState.productID);
-        print("Rating: " + StarRatingState.rating.toString());
         Navigator.pop(context);
-        //DetailPage(post: );
+        
       },
     );
   }
@@ -1055,13 +987,11 @@ class StarRatingState extends State<StarRating> {
         .then((qs1) {
       //SE A AVALIAÇÃO DO USUÁRIO NÃO ESTIVER NA TABELA, CRIAR RATING
       if (qs1.documents.isEmpty) {
-        print("qs1 tá vazio");
         Rating r = Rating(rating: rating, uid: uid, productID: productID);
         r.createData();
       }
       //SE A AVALIAÇÃO ESTIVER NO FIRESTORE, APENAS MODIFICÁ-LA
       else {
-        print("avaliação já estava no BD");
         inDB = true;
         for (DocumentSnapshot doc in qs1.documents) {
           Map<String, dynamic> r = {
@@ -1082,7 +1012,6 @@ class StarRatingState extends State<StarRating> {
       double sum = 0.0;
       for (DocumentSnapshot doc in querySnapshot.documents) {
         sum += double.parse(doc.data['rating'].toString());
-        print("for = " + sum.toString());
       }
       return sum;
     });
@@ -1096,13 +1025,8 @@ class StarRatingState extends State<StarRating> {
       for (DocumentSnapshot doc in querySnapshot.documents) {
         Product p = Product.fromJson(doc.data);
         if (inDB == false) p.scoresGiven++;
-        print("sum = " + sum.toString());
-        //print(this.totalScore.toString());
-        print("for 2 sum = " + sum.toString());
         p.avgScore = double.parse((sum / p.scoresGiven).toStringAsFixed(1));
-        print("p.avgScore = " + p.avgScore.toString());
-        //print("this.totalScore = " + this.totalScore.toString());
-
+        
         Map<String, dynamic> mapProduct = {
           "productName": p.getName(),
           "productDescription": p.getDescription(),
@@ -1120,8 +1044,6 @@ class StarRatingState extends State<StarRating> {
             .document(doc.documentID)
             .updateData(mapProduct)
             .whenComplete(() {
-          print(mapProduct["avgScore"]);
-          print("modified\n");
         });
       }
     });
