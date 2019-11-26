@@ -153,38 +153,40 @@ class ProfilePageState extends State<ProfilePage> {
                                               context: context,
                                               builder: (BuildContext context) =>
                                                   AlertDialog(
-                                                    title: Text("Opções"),
+                                                    //title: Text("Opções"),
                                                     content: SizedBox(
-                                                        height: 100,
-                                                        width: 100,
+                                                        height: 50,
+                                                        width: 80,
                                                         child: ListView(
                                                           children: <Widget>[
                                                             ListTile(
-                                                              leading: Text(
-                                                                'Remover',
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        18),
-                                                              ),
-                                                              trailing: Icon(
-                                                                  FontAwesomeIcons
-                                                                      .trash),
-                                                              onTap: () {
-                                                                Firestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        'products')
-                                                                    .document(snapshot
-                                                                        .data[
-                                                                            index]
-                                                                        .data['productID'])
-                                                                    .delete();
-                                                            Navigator.pop(context);
-                                                            Navigator.pushReplacement(context,
-                                                            MaterialPageRoute(builder: (context) => ProfilePage()));
-                                                            }
-                                                            
-                                                            )
+                                                                leading: Text(
+                                                                  'Remover',
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          18),
+                                                                ),
+                                                                trailing: Icon(
+                                                                    FontAwesomeIcons
+                                                                        .trash),
+                                                                onTap: () {
+                                                                  Firestore
+                                                                      .instance
+                                                                      .collection(
+                                                                          'products')
+                                                                      .document(snapshot
+                                                                          .data[
+                                                                              index]
+                                                                          .data['productID'])
+                                                                      .delete();
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  Navigator.pushReplacement(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                          builder: (context) =>
+                                                                              ProfilePage()));
+                                                                })
                                                           ],
                                                         )),
                                                   ));
