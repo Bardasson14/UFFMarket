@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker_modern/image_picker_modern.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:uff_market/auth.dart';
 import 'package:path/path.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
@@ -16,6 +16,10 @@ import 'package:url_launcher/url_launcher.dart';
 Color uffBlue = const Color(0xff005AAE);
 String dropdownValueLoc;
 String dropdownValueCat;
+final _formKey1 = GlobalKey<FormState>();
+final _formKey2 = GlobalKey<FormState>();
+final _formKey3 = GlobalKey<FormState>();
+final _formKey4 = GlobalKey<FormState>();
 final productNameTFController = TextEditingController();
 final productDescriptionTFController = TextEditingController();
 final productPriceTFController = TextEditingController();
@@ -125,8 +129,7 @@ class Product {
   }
 
   createData(String id) {
-    DocumentReference docRef =
-        Firestore.instance.collection('products').document(id);
+    DocumentReference docRef = Firestore.instance.collection('products').document(id);
     Map<String, dynamic> product = {
       "productID": productID,
       "productDescription": productDescription,
@@ -165,19 +168,23 @@ class Product {
   }
 }
 
-class ProductName extends StatefulWidget {
+class ProductName extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
+    // TODO: implement createState
     return ProductNameState();
   }
+  
 }
 
 class ProductNameState extends State<ProductName> {
   @override
+
   Widget build(BuildContext context) {
     return TextField(
       maxLength: 30,
       controller: productNameTFController,
+      key: _formKey1,
       decoration: InputDecoration(
         hintText: "Nome do Produto..",
         border: OutlineInputBorder(
@@ -188,19 +195,21 @@ class ProductNameState extends State<ProductName> {
   }
 }
 
-class ProductDescription extends StatefulWidget {
+class ProductDescription extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
     return ProductDescriptionState();
   }
+  
 }
 
-class ProductDescriptionState extends State<ProductDescription> {
+class ProductDescriptionState extends State<ProductDescription>{
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: productDescriptionTFController,
       maxLines: null,
+      key: _formKey2,
       maxLength: 40,
       decoration: InputDecoration(
         hintText: "Descrição do Produto..",
@@ -212,17 +221,19 @@ class ProductDescriptionState extends State<ProductDescription> {
   }
 }
 
-class ProductPrice extends StatefulWidget {
+class ProductPrice extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
+    // TODO: implement createState
     return ProductPriceState();
   }
 }
 
-class ProductPriceState extends State<ProductPrice> {
+class ProductPriceState extends State<ProductPrice>{
   @override
   Widget build(BuildContext context) {
     return TextField(
+      key: _formKey3,
       controller: productPriceTFController,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
@@ -235,6 +246,7 @@ class ProductPriceState extends State<ProductPrice> {
 }
 
 class AdditionalInfo extends StatefulWidget {
+  
   @override
   State<StatefulWidget> createState() {
     return AdditionalInfoState();
@@ -242,9 +254,11 @@ class AdditionalInfo extends StatefulWidget {
 }
 
 class AdditionalInfoState extends State<AdditionalInfo> {
-  @override
+  
   Widget build(BuildContext context) {
     return TextField(
+      key: _formKey4,
+      
       maxLength: 80,
       controller: additionalInfoTFController,
       //keyboardType: TextInputType.number,
@@ -289,6 +303,7 @@ class SellProductState extends State<SellProduct> {
     AddPictureState.width = width;
     return Scaffold(
       key: _scaffoldKey,
+      resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         backgroundColor: uffBlue,
         title: Text("Vender Produtos",
